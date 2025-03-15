@@ -88,6 +88,9 @@ Delete a specific conversation.
    - Mobile applications
    - Browser extensions
    - Integration with major travel platforms
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 
 ```
