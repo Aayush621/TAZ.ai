@@ -37,7 +37,7 @@ set_env("GROQ_API_KEY")
 
 # Initialize the LLM
 llm = ChatGroq(
-    model_name="llama-3.3-70b-versatile",
+    model_name="llama-3.1-8b-instant",
     api_key=os.environ.get("GROQ_API_KEY"),
     temperature=0,
     streaming=False,  # Set to False for API use
