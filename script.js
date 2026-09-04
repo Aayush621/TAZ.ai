@@ -33,8 +33,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Store conversation ID for continued conversation
     let conversationId = null
   
-    // API endpoint (replace with your actual FastAPI endpoint)
-    const API_URL = "https://taz-ai.onrender.com/travel/chat"
+    // Use the local API during development and the hosted API in production.
+    const isLocalDevelopment = ["localhost", "127.0.0.1"].includes(window.location.hostname)
+    const API_URL = isLocalDevelopment
+      ? "http://127.0.0.1:8000/travel/chat"
+      : "https://taz-ai.onrender.com/travel/chat"
   
     // Function to create and show typing indicator
     function showTypingIndicator() {
@@ -198,4 +201,4 @@ document.addEventListener("DOMContentLoaded", () => {
       // Add fallback response
       addHeroMessage(fallbackResponse, false)
     }
-  })  
+  })

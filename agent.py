@@ -1,4 +1,4 @@
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
@@ -15,13 +15,15 @@ def set_env(name: str):
 
 
 # Set required environment variables
-set_env("GROQ_API_KEY")
+set_env("OPENROUTER_API_KEY")
 
-llm = ChatGroq(
-    model_name="llama3-70b-8192",
-    api_key=os.environ.get("GROQ_API_KEY"),
-    temperature=0,
+llm = ChatOpenAI(
+    model=os.environ.get("OPENROUTER_MODEL", "openrouter/free"),
+    api_key=os.environ["OPENROUTER_API_KEY"],
+    base_url="https://openrouter.ai/api/v1",
+    temperature=0.6,
     streaming=True,
+    extra_body={"reasoning": {"effort": "none"}},
 )
 
 # Define a proper system prompt

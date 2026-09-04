@@ -1,102 +1,146 @@
 # TAZ.ai - Your AI-Powered Travel Buddy ✈️
 
-TAZ.ai is an innovative travel planning platform that leverages artificial intelligence to provide end-to-end trip planning solutions. From initial planning to booking transportation, accommodations, and activities, TAZ.ai creates personalized travel experiences with hassle-free itineraries.
+TAZ.ai is a conversational travel-planning application that creates personalized
+itineraries based on a user's destination, dates, interests, and budget.
 
----
+## Features
 
-## 🌟 Features
+- Conversational trip planning
+- Preference-based itineraries
+- Flight, accommodation, activity, and budget suggestions
+- Multi-turn conversations with conversation IDs
+- Responsive HTML, CSS, and JavaScript frontend
+- FastAPI and LangGraph backend
+- OpenRouter integration with automatic free-model routing
 
-### Core Functionality
-- **Intelligent Trip Planning**: AI-powered travel agent that understands and adapts to your preferences.
-- **Complete Itinerary Creation**: Detailed day-by-day planning, including flights, accommodations, and activities.
-- **Interactive Chat Interface**: Natural conversation-based travel planning.
-- **Real-time Updates**: Dynamic itinerary adjustments and travel recommendations.
+## Tech Stack
 
-### Multi-Device Integration Vision
-- **Smartwatch Integration**: Plan your trips hands-free while on the go.
-- **VR Experience**: Visualize destinations in immersive 3D environments before booking.
-- **Smart Home Integration**: Voice-commanded travel planning through devices like Alexa.
+- **Frontend:** HTML, CSS, and JavaScript
+- **Backend:** FastAPI and Uvicorn
+- **AI orchestration:** LangChain and LangGraph
+- **Model provider:** OpenRouter
+- **Default model:** `openrouter/free`
+- **Optional model:** `moonshotai/kimi-k2.6` (paid)
 
----
+## Prerequisites
 
-## 🚀 Getting Started
+- Python 3.9+
+- An [OpenRouter API key](https://openrouter.ai/keys)
 
-### Prerequisites
-- Python 3.8+
-- Groq API Key
-
-### Installation
+## Local Setup
 
 1. Clone the repository:
+
    ```bash
-   git clone https://github.com/yourusername/TAZ.ai.git
+   git clone https://github.com/Aayush621/TAZ.ai.git
    cd TAZ.ai
    ```
 
-2. Install dependencies:
+2. Create and activate a virtual environment:
+
    ```bash
-   pip install -r requirements.txt
+   python3 -m venv .venv
+   source .venv/bin/activate
    ```
 
-3. Set up environment variables:
-   Create a `.env` file in the root directory and add:
-   ```plaintext
-   GROQ_API_KEY=your_groq_api_key
-   ```
+3. Install the dependencies:
 
-4. Run the application:
    ```bash
-   uvicorn api:app --reload
+   python -m pip install --upgrade pip
+   python -m pip install -r requirements.txt
    ```
 
----
+4. Create a `.env` file in the project root:
 
-## 🛠️ Tech Stack
+   ```env
+   OPENROUTER_API_KEY=your_openrouter_api_key
+   OPENROUTER_MODEL=openrouter/free
+   ```
 
-- **Backend**: FastAPI
-- **AI/ML**: 
-  - LangChain
-  - Groq LLM (llama3-70b-8192 model)
-  - LangGraph for agent creation
-- **Frontend**: HTML5, CSS3, JavaScript
-- **API**: RESTful architecture
+   `OPENROUTER_MODEL` is optional. When it is omitted, the application uses
+   `openrouter/free`, which automatically selects a currently available free
+   model compatible with the request. Free-model availability and rate limits
+   can change.
 
----
+   To use paid Kimi K2.6 instead:
 
-## 📚 API Documentation
+   ```env
+   OPENROUTER_MODEL=moonshotai/kimi-k2.6
+   ```
 
-### Endpoints
+## Running Locally
 
-#### `POST /travel/chat`
-Start or continue a conversation with the travel agent.
+Run the backend in the first terminal:
 
-#### `GET /travel/conversations/{conversation_id}`
-Retrieve the full conversation history.
+```bash
+source .venv/bin/activate
+python -m uvicorn api:app --reload --port 8000
+```
 
-#### `DELETE /travel/conversations/{conversation_id}`
-Delete a specific conversation.
+Run the frontend in a second terminal:
 
----
+```bash
+python3 -m http.server 3000
+```
 
-## 🔮 Future Roadmap
+Open [http://localhost:3000](http://localhost:3000) in a browser. When the
+frontend is opened on `localhost` or `127.0.0.1`, it automatically sends chat
+requests to `http://127.0.0.1:8000/travel/chat`.
 
-### 1️⃣ Device Integration
-- Smartwatch apps for real-time travel updates.
-- VR integration for immersive destination previews.
-- Voice assistant compatibility.
+## Frontend and Backend Deployment
 
-### 2️⃣ Enhanced Features
-- Real-time booking integration.
-- Multi-language support.
-- Personalized travel recommendations.
-- Group travel coordination.
+The production API URL is configured in `script.js`. It currently points to:
 
-### 3️⃣ Platform Expansion
-- Mobile applications.
-- Browser extensions.
-- Integration with major travel platforms.
+```text
+https://taz-ai.onrender.com/travel/chat
+```
 
----
+If the backend is deployed somewhere else, update that URL before deploying the
+frontend to Vercel. A Vercel-hosted frontend cannot access a backend through
+`localhost`; the backend must have a public HTTPS URL.
 
-## 📄 License
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+Configure `OPENROUTER_API_KEY` and, optionally, `OPENROUTER_MODEL` on the backend
+hosting provider. Never expose the OpenRouter key in frontend JavaScript or
+commit it to Git.
+
+For temporary testing against a backend running on your computer, expose port
+8000 through an HTTPS tunnel and use the generated URL as the production API URL.
+
+## API Endpoints
+
+### `POST /travel/chat`
+
+Start or continue a conversation:
+
+```json
+{
+  "message": "Plan a three-day trip to Jaipur",
+  "conversation_id": null
+}
+```
+
+### `GET /travel/conversations/{conversation_id}`
+
+Retrieve a conversation's message history.
+
+### `DELETE /travel/conversations/{conversation_id}`
+
+Delete an in-memory conversation.
+
+## Notes
+
+- Conversations are currently stored in memory and are lost when the backend restarts.
+- The free OpenRouter route is suitable for development and demos, but does not guarantee a fixed model or production availability.
+- Travel suggestions are AI-generated and should be verified before booking.
+
+## Future Roadmap
+
+- Real-time flight and accommodation integrations
+- Persistent conversation storage
+- Multi-language support
+- Group travel coordination
+- Smartwatch, VR, and voice-assistant integrations
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

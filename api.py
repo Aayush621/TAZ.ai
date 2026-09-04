@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import uuid
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
@@ -33,14 +33,16 @@ def set_env(name: str):
     os.environ[name] = env_value
 
 # Set required environment variables
-set_env("GROQ_API_KEY")
+set_env("OPENROUTER_API_KEY")
 
 # Initialize the LLM
-llm = ChatGroq(
-    model_name="llama-3.1-8b-instant",
-    api_key=os.environ.get("GROQ_API_KEY"),
-    temperature=0,
+llm = ChatOpenAI(
+    model=os.environ.get("OPENROUTER_MODEL", "openrouter/free"),
+    api_key=os.environ["OPENROUTER_API_KEY"],
+    base_url="https://openrouter.ai/api/v1",
+    temperature=0.6,
     streaming=False,  # Set to False for API use
+    extra_body={"reasoning": {"effort": "none"}},
 )
 
 # Define system prompt
