@@ -8,6 +8,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
 from dotenv import load_dotenv
+from travel_policy import system_prompt
 import os
 
 # Load environment variables
@@ -45,24 +46,6 @@ llm = ChatOpenAI(
     extra_body={"reasoning": {"effort": "none"}},
 )
 
-# Define system prompt
-system_prompt = """
-You are a travel agent that plans trips for users entirely.
-You help users plan trips by providing detailed itineraries, flight options, accommodation recommendations,
-and activities based on their preferences and budget.
-
-Your process should be:
-1. First, understand the basic travel request (destinations, dates if provided)
-2. Ask the user about their specific activity interests and preferences
-3. Only after receiving their preferences, create a complete itinerary including:
-   - Flight options and travel time
-   - Accommodation options
-   - Must-see attractions and activities tailored to their interests
-   - Estimated budget
-
-Always ask for activity preferences before providing the final itinerary.
-"""
-
 # Create prompt template
 prompt_template = ChatPromptTemplate.from_messages([
     ("system", system_prompt),
@@ -97,7 +80,9 @@ tools = [
 ]
 
 # Create the agent
-agent = create_react_agent(llm, [travel_planner], checkpointer=MemorySaver())
+agent = create_react_agent(
+    llm, [travel_planner], prompt=system_prompt, checkpointer=MemorySaver()
+)
 
 # Store active conversations
 active_conversations = {}

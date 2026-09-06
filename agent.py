@@ -3,6 +3,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
 from dotenv import load_dotenv
+from travel_policy import system_prompt
 import os
 
 load_dotenv()
@@ -25,24 +26,6 @@ llm = ChatOpenAI(
     streaming=True,
     extra_body={"reasoning": {"effort": "none"}},
 )
-
-# Define a proper system prompt
-system_prompt = """
-You are a travel agent that plans trips for users entirely.
-You help users plan trips by providing detailed itineraries, flight options, accommodation recommendations,
-and activities based on their preferences and budget.
-
-Your process should be:
-1. First, understand the basic travel request (destinations, dates if provided)
-2. Ask the user about their specific activity interests and preferences
-3. Only after receiving their preferences, create a complete itinerary including:
-   - Flight options and travel time
-   - Accommodation options
-   - Must-see attractions and activities tailored to their interests
-   - Estimated budget
-
-Always ask for activity preferences before providing the final itinerary.
-"""
 
 # Create a proper prompt template
 prompt_template = ChatPromptTemplate.from_messages([
@@ -80,7 +63,9 @@ tools = [
 ]
 
 # Create the agent with the proper tools
-agent = create_react_agent(llm, [travel_planner], checkpointer=MemorySaver())
+agent = create_react_agent(
+    llm, [travel_planner], prompt=system_prompt, checkpointer=MemorySaver()
+)
 config = {"configurable": {"thread_id": "thread-1"}}
 
 def print_stream(graph, inputs, config):
@@ -166,4 +151,5 @@ def run_conversation():
         inputs = {"messages": result["messages"] + [("user", follow_up)]}
 
 # Replace the single-turn interaction with the conversation loop
-run_conversation()
+if __name__ == "__main__":
+    run_conversation()
